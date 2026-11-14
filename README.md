@@ -33,3 +33,8 @@ Images are processed locally in the browser and are not uploaded to a server.
 Shapix is currently in its first version and is actively being developed.
 
 More editing tools and features will be added in future versions.
+
+---
+
+© 2026 [Xreft]. All rights reserved.
+Licensed under the MIT License.
