@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="en" dir="rtl">
+
+<head>
+  <meta name="description"
+    content="قصّاص - محرر صور مجاني يعمل داخل المتصفح. اقصص الصور بأشكال متعددة وأضف فلاتر بدون رفعها لخادم.">
+  <meta name="keywords" content="محرر صور, قص الصور, ازالة خلفية, تعديل صور, محرر صور مجاني">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>قصّاص | محرر الصور والأشكال</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      color: #f3f4f6;
+      background: #0b1020
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 85% 0%, #263c65 0, transparent 38%), #0b1020
+    }
+
+    header {
+      max-width: 1160px;
+      margin: auto;
+      padding: 28px 22px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap
+    }
+
+    header .htext {
+      flex: 1;
+      min-width: 220px
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 39px)
+    }
+
+    header p {
+      color: #aebad0;
+      margin: 8px 0 0
+    }
+
+    .tag {
+      font-size: 12px;
+      color: #8be0d0;
+      background: #123c41;
+      border: 1px solid #246569;
+      border-radius: 20px;
+      padding: 4px 10px;
+      display: inline-block;
+      margin-bottom: 10px
+    }
+
+    #langBtn {
+      border: 1px solid #506481;
+      background: #263751;
+      color: #f3f4f6;
+      border-radius: 11px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      white-space: nowrap
+    }
+
+    #langBtn:hover {
+      border-color: #66dfc7
+    }
+
+    main {
+      max-width: 1160px;
+      margin: 20px auto;
+      padding: 0 18px 45px;
+      display: grid;
+      grid-template-columns: minmax(290px, 350px) minmax(0, 1fr);
+      gap: 20px
+    }
+
+    .panel {
+      background: #151e31;
+      border: 1px solid #30415b;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 18px 45px #0003
+    }
+
+    h2 {
+      font-size: 17px;
+      margin: 0 0 16px
+    }
+
+    h3 {
+      font-size: 13px;
+      margin: 0 0 10px;
+      color: #9caec5;
+      font-weight: 700;
+      text-transform: none
+    }
+
+    .drop {
+      display: block;
+      border: 2px dashed #4b688d;
+      background: #1b2940;
+      border-radius: 16px;
+      text-align: center;
+      padding: 23px 10px;
+      cursor: pointer;
+      transition: .2s
+    }
+
+    .drop:hover,
+    .drop.drag {
+      border-color: #61d6c1;
+      background: #1d3b49
+    }
+
+    .drop b {
+      display: block;
+      margin: 8px
+    }
+
+    .drop small,
+    .hint {
+      color: #9caec5;
+      font-size: 12px
+    }
+
+    input[type=file] {
+      display: none
+    }
+
+    .group {
+      margin: 20px 0
+    }
+
+    .label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 11px;
+      font-size: 14px
+    }
+
+    .label output {
+      color: #88e2cf;
+      direction: ltr
+    }
+
+    .shapes,
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px
+    }
+
+    button,
+    .shape,
+    .filter-btn {
+      font: inherit
+    }
+
+    .shape,
+    .filter-btn {
+      border: 1px solid #3c506c;
+      background: #202d44;
+      color: #e8effb;
+      border-radius: 12px;
+      padding: 12px 3px;
+      cursor: pointer;
+      font-size: 12px
+    }
+
+    .shape.active,
+    .filter-btn.active {
+      background: #17534e;
+      border-color: #64e2ca;
+      color: #bfffee
+    }
+
+    .shape span {
+      display: block;
+      font-size: 24px;
+      line-height: 1.5
+    }
+
+    .range {
+      width: 100%;
+      accent-color: #66dfc7;
+      cursor: pointer
+    }
+
+    .checks {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #d6e1f2;
+      font-size: 14px
+    }
+
+    .checks input {
+      accent-color: #66dfc7
+    }
+
+    .actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 22px
+    }
+
+    .btn {
+      border: 1px solid #506481;
+      background: #263751;
+      color: white;
+      border-radius: 11px;
+      padding: 12px 16px;
+      cursor: pointer;
+      flex: 1;
+      font: inherit
+    }
+
+    .btn.primary {
+      background: linear-gradient(110deg, #47c7b2, #238eaa);
+      color: #041c29;
+      font-weight: 800;
+      border: 0
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    .mode-toggle {
+      display: flex;
+      gap: 8px
+    }
+
+    .mode-toggle button {
+      flex: 1;
+      border: 1px solid #3c506c;
+      background: #202d44;
+      color: #e8effb;
+      border-radius: 11px;
+      padding: 11px 6px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px
+    }
+
+    .mode-toggle button.active {
+      background: #17534e;
+      border-color: #64e2ca;
+      color: #bfffee
+    }
+
+    .swatches {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .swatch {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid #30415b;
+      cursor: pointer;
+      padding: 0
+    }
+
+    .swatch.active {
+      border-color: #fff;
+      box-shadow: 0 0 0 2px #66dfc7
+    }
+
+    input[type=color] {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 50%;
+      background: none;
+      cursor: pointer;
+      padding: 0
+    }
+
+    .flip-row {
+      display: flex;
+      gap: 9px
+    }
+
+    .flip-row button {
+      flex: 1;
+      border: 1px solid #3c506c;
+      background: #202d44;
+      color: #e8effb;
+      border-radius: 11px;
+      padding: 10px 6px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px
+    }
+
+    .preview {
+      display: flex;
+      flex-direction: column;
+      min-height: 570px
+    }
+
+    .preview-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    .preview-top p {
+      font-size: 12px;
+      color: #a9b9cd
+    }
+
+    .stage {
+      flex: 1;
+      min-height: 390px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      border: 1px solid #35445c;
+      background-color: #202a3d;
+      background-image: linear-gradient(45deg, #ffffff0a 25%, transparent 25%), linear-gradient(-45deg, #ffffff0a 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ffffff0a 75%), linear-gradient(-45deg, transparent 75%, #ffffff0a 75%);
+      background-size: 24px 24px;
+      background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+      overflow: hidden;
+      touch-action: none;
+      position: relative
+    }
+
+    canvas {
+      display: block;
+      width: min(100%, 520px);
+      height: auto;
+      aspect-ratio: 1;
+      touch-action: none;
+      cursor: grab
+    }
+
+    canvas.draw-mode {
+      cursor: crosshair
+    }
+
+    canvas:active {
+      cursor: grabbing
+    }
+
+    canvas.draw-mode:active {
+      cursor: crosshair
+    }
+
+    .empty {
+      position: absolute;
+      pointer-events: none;
+      text-align: center;
+      color: #b9c9dc;
+      padding: 20px
+    }
+
+    .empty span {
+      display: block;
+      font-size: 52px;
+      margin-bottom: 12px
+    }
+
+    .bottom {
+      color: #a9b9cd;
+      font-size: 13px;
+      line-height: 1.8;
+      margin-top: 14px
+    }
+
+    .status {
+      font-size: 13px;
+      color: #8be0d0;
+      min-height: 20px;
+      margin-top: 10px
+    }
+
+    footer {
+      color: #8597b0;
+      text-align: center;
+      font-size: 12px;
+      padding: 0 16px 26px
+    }
+
+    @media(max-width:760px) {
+      main {
+        grid-template-columns: 1fr
+      }
+
+      .preview {
+        min-height: unset
+      }
+
+      .stage {
+        min-height: 320px
+      }
+
+      header {
+        padding-top: 20px
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      * {
+        transition: none !important
+      }
+    }
+
+    html[dir=ltr] .swatches,
+    html[dir=ltr] .flip-row {
+      direction: ltr
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="htext">
+      <span class="tag" data-i18n="tag">نسخة 2.0 • يعمل داخل المتصفح</span>
+      <h1>✂️ <span data-i18n="appName">قصّاص</span> <span style="color:#66dfc7">|</span> <span data-i18n="titleSub">محرر
+          الصور</span></h1>
+      <p data-i18n="subtitle">ارفع صورتك، اختر الشكل، ارسم وأضف فلاتر، ثم نزّلها بخلفية شفافة.</p>
+    </div>
+    <button id="langBtn" type="button">English</button>
+  </header>
+  <main>
+    <section class="panel" aria-label="أدوات التعديل">
+      <h2 data-i18n="toolsHeading">أدوات التحرير</h2>
+      <label class="drop" id="drop" for="file"><span style="font-size:32px">🖼️</span><b data-i18n="dropTitle">اضغط لرفع
+          صورة أو اسحبها هنا</b><small data-i18n="dropHint">PNG وJPEG وWebP وGIF ثابت • حد 20 ميغابايت</small></label>
+      <input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif">
+
+      <div class="group">
+        <div class="label"><strong data-i18n="shapeHeading">شكل القص</strong></div>
+        <div class="shapes" id="shapes">
+          <button class="shape active" data-shape="circle"><span>●</span><span
+              data-i18n="shapeCircle">دائرة</span></button>
+          <button class="shape" data-shape="triangle"><span>▲</span><span data-i18n="shapeTriangle">مثلث</span></button>
+          <button class="shape" data-shape="square"><span>■</span><span data-i18n="shapeSquare">مربع</span></button>
+          <button class="shape" data-shape="rounded"><span>▢</span><span data-i18n="shapeRounded">مربع
+              منحني</span></button>
+          <button class="shape" data-shape="star"><span>★</span><span data-i18n="shapeStar">نجمة</span></button>
+          <button class="shape" data-shape="hexagon"><span>⬡</span><span data-i18n="shapeHexagon">سداسي</span></button>
+        </div>
+      </div>
+
+      <div class="group"><label class="label" for="zoom"><strong data-i18n="zoomLabel">التكبير</strong><output
+            id="zoomOut">100%</output></label><input class="range" id="zoom" type="range" min="50" max="300" value="100"
+          step="1"></div>
+      <div class="group"><label class="label" for="rotation"><strong data-i18n="rotationLabel">التدوير</strong><output
+            id="rotationOut">0°</output></label><input class="range" id="rotation" type="range" min="-180" max="180"
+          value="0" step="1"></div>
+      <div class="group"><label class="label" for="size"><strong data-i18n="sizeLabel">حجم الشكل</strong><output
+            id="sizeOut">90%</output></label><input class="range" id="size" type="range" min="20" max="100" value="90"
+          step="1"></div>
+
+      <div class="group">
+        <div class="label"><strong data-i18n="flipHeading">القلب</strong></div>
+        <div class="flip-row">
+          <button id="flipH" type="button">⇋ <span data-i18n="flipH">أفقي</span></button>
+          <button id="flipV" type="button">⇵ <span data-i18n="flipV">رأسي</span></button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="label"><strong data-i18n="filtersHeading">الفلاتر</strong></div>
+        <div class="filters" id="filters">
+          <button class="filter-btn active" data-filter="none" data-i18n="filterNone">بدون</button>
+          <button class="filter-btn" data-filter="bw" data-i18n="filterBw">أبيض وأسود</button>
+          <button class="filter-btn" data-filter="sepia" data-i18n="filterSepia">سيبيا</button>
+          <button class="filter-btn" data-filter="invert" data-i18n="filterInvert">معكوس</button>
+          <button class="filter-btn" data-filter="vintage" data-i18n="filterVintage">قديم</button>
+          <button class="filter-btn" data-filter="cool" data-i18n="filterCool">بارد</button>
+          <button class="filter-btn" data-filter="warm" data-i18n="filterWarm">دافئ</button>
+        </div>
+      </div>
+
+      <div class="group"><label class="label" for="brightness"><strong
+            data-i18n="brightnessLabel">السطوع</strong><output id="brightnessOut">100%</output></label><input
+          class="range" id="brightness" type="range" min="40" max="180" value="100" step="1"></div>
+      <div class="group"><label class="label" for="contrast"><strong data-i18n="contrastLabel">التباين</strong><output
+            id="contrastOut">100%</output></label><input class="range" id="contrast" type="range" min="40" max="180"
+          value="100" step="1"></div>
+      <div class="group"><label class="label" for="saturate"><strong data-i18n="saturateLabel">التشبع</strong><output
+            id="saturateOut">100%</output></label><input class="range" id="saturate" type="range" min="0" max="220"
+          value="100" step="1"></div>
+      <div class="group"><label class="label" for="blur"><strong data-i18n="blurLabel">الضبابية</strong><output
+            id="blurOut">0px</output></label><input class="range" id="blur" type="range" min="0" max="10" value="0"
+          step="0.5"></div>
+
+      <div class="group">
+        <div class="label"><strong data-i18n="modeHeading">الوضع</strong></div>
+        <div class="mode-toggle">
+          <button id="modeMove" class="active" type="button" data-i18n="modeMove">تحريك</button>
+          <button id="modeDraw" type="button" data-i18n="modeDraw">رسم</button>
+        </div>
+        <div id="drawControls" style="margin-top:14px;display:none">
+          <div class="label"><strong data-i18n="colorLabel">اللون</strong></div>
+          <div class="swatches" id="swatches">
+            <button class="swatch active" data-color="#ff3b3b" style="background:#ff3b3b"></button>
+            <button class="swatch" data-color="#ffb020" style="background:#ffb020"></button>
+            <button class="swatch" data-color="#ffe14d" style="background:#ffe14d"></button>
+            <button class="swatch" data-color="#4dd67a" style="background:#4dd67a"></button>
+            <button class="swatch" data-color="#39c7ff" style="background:#39c7ff"></button>
+            <button class="swatch" data-color="#8c6bff" style="background:#8c6bff"></button>
+            <button class="swatch" data-color="#ffffff" style="background:#ffffff"></button>
+            <button class="swatch" data-color="#111111" style="background:#111111"></button>
+            <input id="customColor" type="color" value="#ff3b3b" aria-label="لون مخصص">
+          </div>
+          <div class="label" style="margin-top:14px" for="brushSize"><strong data-i18n="brushLabel">حجم
+              الفرشاة</strong><output id="brushSizeOut">8</output></div>
+          <input class="range" id="brushSize" type="range" min="2" max="40" value="8" step="1">
+          <div class="actions" style="margin-top:14px">
+            <button class="btn" id="undoDraw" type="button" data-i18n="undoBtn">↩ تراجع</button>
+            <button class="btn" id="clearDraw" type="button" data-i18n="clearBtn">✕ مسح الرسم</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group"><label class="checks"><input type="checkbox" id="transparent" checked> <span
+            data-i18n="transparentLabel">خلفية شفافة (PNG)</span></label>
+        <div id="bgControls" style="margin-top:12px;display:none"><label class="label" for="bgColor"
+            data-i18n="bgColorLabel">لون الخلفية</label><input id="bgColor" type="color" value="#ffffff"
+            aria-label="لون الخلفية"></div>
+      </div>
+
+      <div class="actions"><button class="btn" id="reset" disabled data-i18n="resetBtn">↺ إعادة ضبط</button><button
+          class="btn primary" id="download" disabled data-i18n="downloadBtn">↓ تنزيل PNG</button></div>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="panel preview" aria-label="معاينة الصورة">
+      <div class="preview-top">
+        <h2 data-i18n="previewHeading">المعاينة المباشرة</h2>
+        <p data-i18n="previewHint">اسحب الصورة لتحريكها</p>
+      </div>
+      <div class="stage" id="stage">
+        <canvas id="canvas" width="800" height="800" aria-label="معاينة الصورة المقصوصة"></canvas>
+        <div class="empty" id="empty"><span>✦</span><span data-i18n="emptyText">ارفع صورة لتبدأ التعديل</span></div>
+      </div>
+      <div class="bottom" data-i18n="bottomText">يمكنك سحب الصورة بإصبعك أو الماوس لتحديد الجزء الظاهر داخل الشكل، أو
+        التبديل لوضع الرسم لإضافة خطوط ملونة. يتم التعديل محليًا؛ لا تُرسل صورك إلى أي خادم. الصورة الناتجة 800 × 800
+        بكسل.</div>
+    </section>
+  </main>
+  <footer data-i18n="footerText">قصّاص — محرر صور مجاني يعمل على GitHub Pages</footer>
+
+  <script>
+    'use strict';
+    const $ = id => document.getElementById(id), canvas = $('canvas'), ctx = canvas.getContext('2d');
+    const W = 800, MAX = 20 * 1024 * 1024;
+
+    /* ---------- i18n ---------- */
+    const I18N = {
+      ar: {
+        appName: 'قصّاص', tag: 'نسخة 2.0 • يعمل داخل المتصفح', titleSub: 'محرر الصور', subtitle: 'ارفع صورتك، اختر الشكل، ارسم وأضف فلاتر، ثم نزّلها بخلفية شفافة.',
+        toolsHeading: 'أدوات التحرير', dropTitle: 'اضغط لرفع صورة أو اسحبها هنا', dropHint: 'PNG وJPEG وWebP وGIF ثابت • حد 20 ميغابايت',
+        shapeHeading: 'شكل القص', shapeCircle: 'دائرة', shapeTriangle: 'مثلث', shapeSquare: 'مربع', shapeRounded: 'مربع منحني', shapeStar: 'نجمة', shapeHexagon: 'سداسي',
+        zoomLabel: 'التكبير', rotationLabel: 'التدوير', sizeLabel: 'حجم الشكل',
+        flipHeading: 'القلب', flipH: 'أفقي', flipV: 'رأسي',
+        filtersHeading: 'الفلاتر', filterNone: 'بدون', filterBw: 'أبيض وأسود', filterSepia: 'سيبيا', filterInvert: 'معكوس', filterVintage: 'قديم', filterCool: 'بارد', filterWarm: 'دافئ',
+        brightnessLabel: 'السطوع', contrastLabel: 'التباين', saturateLabel: 'التشبع', blurLabel: 'الضبابية',
+        modeHeading: 'الوضع', modeMove: 'تحريك', modeDraw: 'رسم', colorLabel: 'اللون', brushLabel: 'حجم الفرشاة', undoBtn: '↩ تراجع', clearBtn: '✕ مسح الرسم',
+        transparentLabel: 'خلفية شفافة (PNG)', bgColorLabel: 'لون الخلفية',
+        resetBtn: '↺ إعادة ضبط', downloadBtn: '↓ تنزيل PNG',
+        previewHeading: 'المعاينة المباشرة', previewHint: 'اسحب الصورة لتحريكها', emptyText: 'ارفع صورة لتبدأ التعديل',
+        bottomText: 'يمكنك سحب الصورة بإصبعك أو الماوس لتحديد الجزء الظاهر داخل الشكل، أو التبديل لوضع الرسم لإضافة خطوط ملونة. يتم التعديل محليًا؛ لا تُرسل صورك إلى أي خادم. الصورة الناتجة 800 × 800 بكسل.',
+        footerText: 'قصّاص — محرر صور مجاني يعمل على GitHub Pages',
+        langBtn: 'English',
+        msgInvalidFile: 'اختر ملف صورة صالحًا.', msgTooBig: 'حجم الصورة أكبر من 20 ميغابايت.', msgLoadFail: 'تعذّر قراءة الصورة. جرّب PNG أو JPEG.',
+        msgUploaded: 'تم رفع الصورة. اسحبها لتحديد موضع القص.', msgReset: 'أُعيد ضبط الصورة.', msgExportFail: 'تعذّر تصدير الصورة.', msgDownloaded: 'تم تجهيز الصورة للتنزيل.', msgDrawCleared: 'تم مسح الرسم.'
+      },
+      en: {
+        appName: 'Shapix', tag: 'v2.0 • runs entirely in your browser', titleSub: 'Image Editor', subtitle: 'Upload a photo, pick a shape, draw and add filters, then download with a transparent background.',
+        toolsHeading: 'Editing Tools', dropTitle: 'Click to upload an image, or drag it here', dropHint: 'PNG, JPEG, WebP, static GIF • 20MB max',
+        shapeHeading: 'Crop Shape', shapeCircle: 'Circle', shapeTriangle: 'Triangle', shapeSquare: 'Square', shapeRounded: 'Rounded square', shapeStar: 'Star', shapeHexagon: 'Hexagon',
+        zoomLabel: 'Zoom', rotationLabel: 'Rotation', sizeLabel: 'Shape size',
+        flipHeading: 'Flip', flipH: 'Horizontal', flipV: 'Vertical',
+        filtersHeading: 'Filters', filterNone: 'None', filterBw: 'Black & white', filterSepia: 'Sepia', filterInvert: 'Invert', filterVintage: 'Vintage', filterCool: 'Cool', filterWarm: 'Warm',
+        brightnessLabel: 'Brightness', contrastLabel: 'Contrast', saturateLabel: 'Saturation', blurLabel: 'Blur',
+        modeHeading: 'Mode', modeMove: 'Move', modeDraw: 'Draw', colorLabel: 'Color', brushLabel: 'Brush size', undoBtn: '↩ Undo', clearBtn: '✕ Clear drawing',
+        transparentLabel: 'Transparent background (PNG)', bgColorLabel: 'Background color',
+        resetBtn: '↺ Reset', downloadBtn: '↓ Download PNG',
+        previewHeading: 'Live Preview', previewHint: 'Drag the image to move it', emptyText: 'Upload an image to start editing',
+        bottomText: 'Drag the image with your mouse or finger to position it inside the shape, or switch to draw mode to add colored strokes. Editing happens locally; your photos are never uploaded. Output is 800 × 800px.',
+        footerText: 'Qassas — a free image editor that runs on GitHub Pages',
+        langBtn: 'العربية',
+        msgInvalidFile: 'Please choose a valid image file.', msgTooBig: 'Image is larger than 20MB.', msgLoadFail: 'Could not read the image. Try PNG or JPEG.',
+        msgUploaded: 'Image uploaded. Drag it to position the crop.', msgReset: 'Image reset.', msgExportFail: 'Could not export the image.', msgDownloaded: 'Image ready for download.', msgDrawCleared: 'Drawing cleared.'
+      }
+    };
+    let lang = 'en';
+    function applyLang() {
+      const t = I18N[lang];
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (t[k]) el.textContent = t[k] });
+      $('langBtn').textContent = t.langBtn;
+    }
+    $('langBtn').addEventListener('click', () => { lang = lang === 'ar' ? 'en' : 'ar'; applyLang() });
+    function setStatus(text) { $('status').textContent = text }
+    function msg(key) { setStatus(I18N[lang][key]) }
+
+    /* ---------- state ---------- */
+    const state = {
+      img: null, shape: 'circle', zoom: 1, rotation: 0, size: .9, x: 0, y: 0, transparent: true, bg: '#ffffff', fileName: 'image',
+      flipX: false, flipY: false, filter: 'none', brightness: 100, contrast: 100, saturate: 100, blur: 0
+    };
+    let drag = null, mode = 'move';
+
+    const drawCanvas = document.createElement('canvas'); drawCanvas.width = W; drawCanvas.height = W;
+    const drawCtx = drawCanvas.getContext('2d'); drawCtx.lineCap = 'round'; drawCtx.lineJoin = 'round';
+    let drawColor = '#ff3b3b', brushSize = 8, drawing = false, undoStack = [];
+
+    const FILTER_CSS = { none: '', bw: 'grayscale(1)', sepia: 'sepia(1)', invert: 'invert(1)', vintage: 'sepia(.5) hue-rotate(-8deg)', cool: 'hue-rotate(180deg)', warm: 'hue-rotate(-20deg)' };
+
+    function clipPath(target, radius) {
+      target.beginPath();
+      if (state.shape === 'circle') target.arc(0, 0, radius, 0, Math.PI * 2);
+      else if (state.shape === 'square') target.rect(-radius, -radius, 2 * radius, 2 * radius);
+      else if (state.shape === 'rounded') target.roundRect(-radius, -radius, 2 * radius, 2 * radius, radius * .26);
+      else { let sides = state.shape === 'triangle' ? 3 : state.shape === 'hexagon' ? 6 : 10; for (let i = 0; i < sides; i++) { let r = state.shape === 'star' ? (i % 2 ? radius * .46 : radius) : radius; let a = -Math.PI / 2 + i * 2 * Math.PI / sides; i ? target.lineTo(Math.cos(a) * r, Math.sin(a) * r) : target.moveTo(Math.cos(a) * r, Math.sin(a) * r) } target.closePath() }
+    }
+
+    function currentFit() { return Math.max(W / state.img.width, W / state.img.height) * state.zoom }
+    function clampOffset() {
+      if (!state.img) return;
+      const fit = currentFit(), radius = W * .5 * state.size;
+      const halfW = state.img.width * fit / 2, halfH = state.img.height * fit / 2;
+      const maxX = Math.max(0, halfW - radius), maxY = Math.max(0, halfH - radius);
+      state.x = Math.max(-maxX, Math.min(maxX, state.x));
+      state.y = Math.max(-maxY, Math.min(maxY, state.y));
+    }
+
+    function render(target = ctx) {
+      target.clearRect(0, 0, W, W);
+      if (!state.img) return;
+      target.save();
+      if (!state.transparent) { target.fillStyle = state.bg; target.fillRect(0, 0, W, W) }
+      target.translate(W / 2, W / 2);
+      let radius = W * .5 * state.size;
+      clipPath(target, radius);
+      target.clip();
+      target.translate(state.x, state.y);
+      target.rotate(state.rotation * Math.PI / 180);
+      target.scale(state.flipX ? -1 : 1, state.flipY ? -1 : 1);
+      target.filter = `${FILTER_CSS[state.filter]} brightness(${state.brightness}%) contrast(${state.contrast}%) saturate(${state.saturate}%) blur(${state.blur}px)`;
+      let fit = currentFit();
+      target.drawImage(state.img, -state.img.width * fit / 2, -state.img.height * fit / 2, state.img.width * fit, state.img.height * fit);
+      target.filter = 'none';
+      target.restore();
+      target.drawImage(drawCanvas, 0, 0);
+    }
+
+    function update() { clampOffset(); render(); $('zoomOut').textContent = Math.round(state.zoom * 100) + '%'; $('rotationOut').textContent = state.rotation + '°'; $('sizeOut').textContent = Math.round(state.size * 100) + '%'; $('brightnessOut').textContent = state.brightness + '%'; $('contrastOut').textContent = state.contrast + '%'; $('saturateOut').textContent = state.saturate + '%'; $('blurOut').textContent = state.blur + 'px' }
+
+    function reset() {
+      state.zoom = 1; state.rotation = 0; state.size = .9; state.x = 0; state.y = 0; state.flipX = false; state.flipY = false;
+      state.filter = 'none'; state.brightness = 100; state.contrast = 100; state.saturate = 100; state.blur = 0;
+      $('zoom').value = 100; $('rotation').value = 0; $('size').value = 90;
+      $('brightness').value = 100; $('contrast').value = 100; $('saturate').value = 100; $('blur').value = 0;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === 'none'));
+      drawCtx.clearRect(0, 0, W, W); undoStack = [];
+      update();
+    }
+
+    async function loadFile(file) {
+      if (!file || !file.type.startsWith('image/')) return msg('msgInvalidFile');
+      if (file.size > MAX) return msg('msgTooBig');
+      try {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          state.img = img;
+          state.fileName = file.name.replace(/\.[^.]+$/, '');
+          $('empty').style.display = 'none';
+          $('reset').disabled = false;
+          $('download').disabled = false;
+          reset();
+          msg('msgUploaded');
+        };
+        img.onerror = () => msg('msgLoadFail');
+        img.src = url;
+      } catch (e) {
+        msg('msgLoadFail');
+      }
+    }
+
+    // File input & drag-drop
+    $('file').addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
+    const drop = $('drop');
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+    drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('drag'); if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
+
+    // Shapes
+    document.querySelectorAll('.shape').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.shape').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.shape = btn.dataset.shape;
+        update();
+      });
+    });
+
+    // Sliders
+    $('zoom').addEventListener('input', e => { state.zoom = e.target.value / 100; update(); });
+    $('rotation').addEventListener('input', e => { state.rotation = parseInt(e.target.value); update(); });
+    $('size').addEventListener('input', e => { state.size = e.target.value / 100; update(); });
+    $('brightness').addEventListener('input', e => { state.brightness = parseInt(e.target.value); update(); });
+    $('contrast').addEventListener('input', e => { state.contrast = parseInt(e.target.value); update(); });
+    $('saturate').addEventListener('input', e => { state.saturate = parseInt(e.target.value); update(); });
+    $('blur').addEventListener('input', e => { state.blur = parseFloat(e.target.value); update(); });
+
+    // Flips
+    $('flipH').addEventListener('click', () => { state.flipX = !state.flipX; update(); });
+    $('flipV').addEventListener('click', () => { state.flipY = !state.flipY; update(); });
+
+    // Filters
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.filter = btn.dataset.filter;
+        update();
+      });
+    });
+
+    // Transparent background
+    $('transparent').addEventListener('change', e => {
+      state.transparent = e.target.checked;
+      $('bgControls').style.display = state.transparent ? 'none' : 'block';
+      update();
+    });
+    $('bgColor').addEventListener('input', e => { state.bg = e.target.value; update(); });
+
+    // Reset & Download
+    $('reset').addEventListener('click', () => { reset(); msg('msgReset'); });
+    $('download').addEventListener('click', () => {
+      try {
+        const a = document.createElement('a');
+        a.download = `${state.fileName}-qassas.png`;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+        msg('msgDownloaded');
+      } catch (e) {
+        msg('msgExportFail');
+      }
+    });
+
+    // Drawing Mode
+    $('modeMove').addEventListener('click', () => {
+      mode = 'move';
+      $('modeMove').classList.add('active');
+      $('modeDraw').classList.remove('active');
+      $('drawControls').style.display = 'none';
+      canvas.classList.remove('draw-mode');
+    });
+    $('modeDraw').addEventListener('click', () => {
+      mode = 'draw';
+      $('modeDraw').classList.add('active');
+      $('modeMove').classList.remove('active');
+      $('drawControls').style.display = 'block';
+      canvas.classList.add('draw-mode');
+    });
+
+    // Brush settings
+    document.querySelectorAll('.swatch').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.swatch').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        drawColor = btn.dataset.color;
+        $('customColor').value = drawColor;
+      });
+    });
+    $('customColor').addEventListener('input', e => { drawColor = e.target.value; document.querySelectorAll('.swatch').forEach(b => b.classList.remove('active')); });
+    $('brushSize').addEventListener('input', e => { brushSize = parseInt(e.target.value); $('brushSizeOut').textContent = brushSize; });
+
+    // Undo & Clear
+    $('undoDraw').addEventListener('click', () => {
+      if (undoStack.length > 0) {
+        const last = undoStack.pop();
+        drawCtx.putImageData(last, 0, 0);
+        update();
+      }
+    });
+    $('clearDraw').addEventListener('click', () => {
+      drawCtx.clearRect(0, 0, W, W);
+      undoStack = [];
+      update();
+      msg('msgDrawCleared');
+    });
+
+    // Mouse / Touch interaction
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = W / rect.width;
+      const scaleY = W / rect.height;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    }
+
+    function startAction(e) {
+      if (!state.img) return;
+      e.preventDefault();
+      const pos = getPos(e);
+      if (mode === 'move') {
+        drag = { x: pos.x - state.x * (canvas.width / W), y: pos.y - state.y * (canvas.height / W) };
+      } else if (mode === 'draw') {
+        drawing = true;
+        undoStack.push(drawCtx.getImageData(0, 0, W, W));
+        if (undoStack.length > 20) undoStack.shift();
+        drawCtx.beginPath();
+        drawCtx.moveTo(pos.x, pos.y);
+        drawCtx.lineWidth = brushSize;
+        drawCtx.strokeStyle = drawColor;
+        drawCtx.lineTo(pos.x, pos.y);
+        drawCtx.stroke();
+        update();
+      }
+    }
+
+    function moveAction(e) {
+      if (!state.img) return;
+      if (drag && mode === 'move') {
+        e.preventDefault();
+        const pos = getPos(e);
+        state.x = (pos.x - drag.x) * (W / canvas.width);
+        state.y = (pos.y - drag.y) * (W / canvas.height);
+        update();
+      } else if (drawing && mode === 'draw') {
+        e.preventDefault();
+        const pos = getPos(e);
+        drawCtx.lineTo(pos.x, pos.y);
+        drawCtx.stroke();
+        update();
+      }
+    }
+
+    function endAction() {
+      drag = null;
+      if (drawing) {
+        drawing = false;
+        drawCtx.closePath();
+      }
+    }
+
+    canvas.addEventListener('mousedown', startAction);
+    canvas.addEventListener('mousemove', moveAction);
+    canvas.addEventListener('mouseup', endAction);
+    canvas.addEventListener('mouseleave', endAction);
+
+    canvas.addEventListener('touchstart', startAction, { passive: false });
+    canvas.addEventListener('touchmove', moveAction, { passive: false });
+    canvas.addEventListener('touchend', endAction);
+    canvas.addEventListener('touchcancel', endAction);
+
+    // Initialize
+    applyLang();
+  </script>
+</body>
+
+</html>
